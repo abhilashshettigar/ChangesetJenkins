@@ -1,2 +1,2 @@
 require('dotenv').config();
-console.log('its alsoworks:-'+process.env.secert)
+console.log('its also works:-'+process.env.secert)
