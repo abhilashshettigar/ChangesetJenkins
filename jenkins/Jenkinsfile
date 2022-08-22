@@ -1,0 +1,23 @@
+
+pipeline {
+   agent any
+   stages {
+    stage('Git checkout') {
+            steps {
+                git branch: 'master', url: 'https://github.com/abhilashshettigar/ChangesetJenkins.git'
+            }
+        }
+    stage('Deploy image converter lambda'){
+      when { changeset "*/image_converter/**"} //Will execute your steps if any file change inside the component_a directory
+        steps {
+            //Your steps
+        }
+    }
+
+    stage('Deploy import document lambda'){
+        when { changeset "*/import_documents_lambda/**"} //Will execute your steps if any file change inside the component_b directory
+         steps {
+             //Your steps  
+         }
+    }
+}
