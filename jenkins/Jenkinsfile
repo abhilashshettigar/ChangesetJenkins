@@ -1,13 +1,13 @@
-
 pipeline {
-   agent any
+   agent { label 'Backend' }
    stages {
-    stage('Git checkout') {
+        stage('Git checkout') {
             steps {
-                git branch: 'master', url: 'https://github.com/abhilashshettigar/ChangesetJenkins.git'
+                git branch: 'main', url: 'https://github.com/abhilashshettigar/ChangesetJenkins.git'
             }
         }
-     stage('Node:14 docker image') {
+
+        stage('Node:14 docker image') {
             agent {
                 docker {
                     image 'node:14'
@@ -20,19 +20,22 @@ pipeline {
                 sh 'cp ./.env ./lambdaFunctions/image_converter/'
                 sh 'cp ./.env ./lambdaFunctions/import_documents_lambda/'
             }
-    }    
-    stage('Deploy image converter lambda'){
-      when { changeset "*/image_converter/**"} 
-        steps {
-            sh 'cd image_converter'
-            sh 'npm run qa'
         }
-    }
 
-    stage('Deploy import document lambda'){
-        when { changeset "*/import_documents_lambda/**"} 
-               sh 'cd import_documents_lambda'
-               sh 'npm run qa'
-         }
-    }
-}
+        stage('Deploy image converter lambda'){
+          when { changeset "*/image_converter/**"} 
+            steps {
+                sh 'cd image_converter'
+                sh 'npm run qa'
+            }
+        }
+    
+        stage('Deploy import document lambda'){
+            when { changeset "*/import_documents_lambda/**"} 
+                steps{
+                    sh 'cd import_documents_lambda'
+                    sh 'npm run qa'
+                }    
+            }
+        }
+}   
