@@ -7,17 +7,32 @@ pipeline {
                 git branch: 'master', url: 'https://github.com/abhilashshettigar/ChangesetJenkins.git'
             }
         }
+     stage('Node:14 docker image') {
+            agent {
+                docker {
+                    image 'node:14'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh 'npm install'
+                sh 'npm install claudia -D'
+                sh 'cp ./.env ./lambdaFunctions/image_converter/'
+                sh 'cp ./.env ./lambdaFunctions/import_documents_lambda/'
+            }
+    }    
     stage('Deploy image converter lambda'){
-      when { changeset "*/image_converter/**"} //Will execute your steps if any file change inside the component_a directory
+      when { changeset "*/image_converter/**"} 
         steps {
-            //Your steps
+            sh 'cd image_converter'
+            sh 'npm run qa'
         }
     }
 
     stage('Deploy import document lambda'){
-        when { changeset "*/import_documents_lambda/**"} //Will execute your steps if any file change inside the component_b directory
-         steps {
-             //Your steps  
+        when { changeset "*/import_documents_lambda/**"} 
+               sh 'cd import_documents_lambda'
+               sh 'npm run qa'
          }
     }
 }
